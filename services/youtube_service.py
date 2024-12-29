@@ -11,6 +11,37 @@ def fetch_youtube_transcript(video_id):
     except Exception as e:
         # You might want to raise or handle the exception
         raise RuntimeError(f"Could not retrieve transcript: {str(e)}")
+    
+def get_video_id_from_title(title):
+    """
+    Uses the YouTube Data API to search for a video by title.
+    Returns the first matching video's 'videoId', or None if not found.
+    """
+    if not YOUTUBE_API_KEY or not title:
+        return None
+
+    base_url = "https://www.googleapis.com/youtube/v3/search"
+    params = {
+        "part": "snippet",
+        "q": title,
+        "type": "video",
+        "maxResults": 1,
+        "key": YOUTUBE_API_KEY
+    }
+    try:
+        response = requests.get(base_url, params=params, timeout=10)
+        response.raise_for_status()
+    except Exception as e:
+        print(f"Error fetching video ID by title: {e}")
+        return None
+
+    data = response.json()
+    items = data.get("items", [])
+    if not items:
+        return None  # No search results
+
+    # Extract the videoId from the first result
+    return items[0]["id"]["videoId"]
 
 def get_video_metadata(video_id):
     """

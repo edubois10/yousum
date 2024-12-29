@@ -1,3 +1,11 @@
+# Basic Architecture (no frontend)
+![Alt text](images/basic_architecture.png)
+1. The user put a Youtube video title or id and submits with a button
+2. The backend checks if there is already an entry with data for the video that was requested
+3. The backend receives the video information, get the transcripts of the video and does a summary request. At the same time it stores the transcript into the database
+4. The model serving makes a summary of the video and send it back to the backend service.
+5. The backend service adds the sumary of the video transcript in the database
+6. The Frontend fetches all the information needed to display the summary
 # Setting up the virual environment
 
 ### Step 1: Create a virtual environment
@@ -53,9 +61,17 @@ DELETE FROM table_name WHERE column_name = 'value';
 
 ## Testing
 ```
-# Save transcript without summary
+# Save transcript without summary with video_id
 curl -X POST -H "Content-Type: application/json" \
      -d '{"video_id": "Wf4IF1KLWs8", "title": "Trump’s Controversial Plan to Eliminate Income Taxes"}' \
+     http://localhost:5000/transcript
+    
+# Save transcript without summary with title    
+curl -X POST -H "Content-Type: application/json" \
+     -d '{
+       "title": "Trump’s Controversial Plan to Eliminate Income Taxes",
+       "summarize": false
+     }' \
      http://localhost:5000/transcript
 
 # Save transcript with summary
